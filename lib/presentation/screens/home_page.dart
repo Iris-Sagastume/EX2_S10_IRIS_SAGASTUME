@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   late TextEditingController _searchController;
   late Stream<List<Recipe>> _recipesStream;
   late List<Recipe> _recipes = [];
+  List<Recipe> _favoriteRecipes = [];
 
   @override
   void initState() {
@@ -34,6 +35,19 @@ class _HomePageState extends State<HomePage> {
       _recipes = _recipes
           .where((recipe) => recipe.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
+    });
+  }
+
+  void _toggleFavorite(Recipe recipe) {
+    setState(() {
+      if (recipe.isFavorite) {
+        _favoriteRecipes.remove(recipe);
+      } else {
+        _favoriteRecipes.add(recipe);
+      }
+      recipe.isFavorite = !recipe.isFavorite;
+      // Actualizar en la base de datos
+      Provider.of<RecipeRepository>(context, listen: false).updateRecipe(recipe);
     });
   }
 
@@ -112,6 +126,10 @@ class _HomePageState extends State<HomePage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                icon: recipe.isFavorite ? const Icon(Icons.favorite) : const Icon(Icons.favorite_border),
+                                onPressed: () => _toggleFavorite(recipe),
+                              ),
+                              IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
                                   Navigator.push(
@@ -156,6 +174,74 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+          ),
+          const Divider(),
+          Expanded(
+            child: _favoriteRecipes.isEmpty
+                ? const Center(child: Text('No tienes recetas favoritas.'))
+                : ListView.builder(
+                    itemCount: _favoriteRecipes.length,
+                    itemBuilder: (context, index) {
+                      final recipe = _favoriteRecipes[index];
+                      return Card(
+                        elevation: 3,
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(recipe.name),
+                          subtitle: Text(recipe.ingredients.join(', ')),
+                          trailing: Container(
+                            width: 100,
+                            color: Colors.white.withOpacity(0.8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.favorite),
+                                  onPressed: () => _toggleFavorite(recipe),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditRecipePage(recipe: recipe),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Confirmar Eliminación'),
+                                        content: const Text('¿Estás seguro de eliminar esta receta?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: const Text('Cancelar'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              recipeRepository.deleteRecipe(recipe.id);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Eliminar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

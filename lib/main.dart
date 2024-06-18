@@ -65,9 +65,9 @@ class _AuthCheckerState extends State<AuthChecker> {
         }
 
         if (snapshot.hasData && snapshot.data != null) {
-          return const HomePage(); // Si el usuario está autenticado, muestra la pantalla principal
+          return const LoginPage(); // Si el usuario está autenticado, muestra la pantalla principal
         } else {
-          return const LoginPage(); // Si no está autenticado, muestra la pantalla de inicio de sesión
+          return const HomePage(); // Si no está autenticado, muestra la pantalla de inicio de sesión
         }
       },
     );
