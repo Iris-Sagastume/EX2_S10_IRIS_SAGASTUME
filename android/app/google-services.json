@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "302572681611",
+    "project_id": "ex2-iris",
+    "storage_bucket": "ex2-iris.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302572681611:android:3978ae0b00b06ec508978e",
+        "android_client_info": {
+          "package_name": "com.example.ex2_s10_iris_sgastume"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_DQ2QtFt87ogXboFnppIAGRkTMFf0Hps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
